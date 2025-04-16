@@ -1,5 +1,6 @@
 package com.example.weatherappjetpackcompose
 
+import WeatherForecastScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.ViewCompat
+import com.example.weatherappjetpackcompose.ui.screens.WeatherAdditionalInfoScreen
 import com.example.weatherappjetpackcompose.ui.screens.WeatherScreen
 import com.example.weatherappjetpackcompose.ui.theme.WeatherAppJetpackComposeTheme
 
@@ -62,20 +64,10 @@ fun BasicWeatherScreen() {
 
 @Composable
 fun AdditionalWeatherScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("💨 Dodatkowe dane: wiatr, wilgotność, widoczność", style = MaterialTheme.typography.headlineMedium)
-    }
+    WeatherAdditionalInfoScreen()
 }
 
 @Composable
 fun ForecastWeatherScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("📅 Prognoza na kolejne dni", style = MaterialTheme.typography.headlineMedium)
-    }
+    WeatherForecastScreen()
 }
