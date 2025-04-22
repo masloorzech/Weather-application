@@ -1,5 +1,6 @@
 package com.example.weatherappjetpackcompose
 
+import WeatherForecastScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,6 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.core.view.ViewCompat
+import com.example.weatherappjetpackcompose.ui.screens.WeatherAdditionalInfoScreen
+import com.example.weatherappjetpackcompose.ui.screens.WeatherScreen
 import com.example.weatherappjetpackcompose.ui.theme.WeatherAppJetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -54,45 +60,15 @@ fun WeatherPagerScreen() {
 
 @Composable
 fun BasicWeatherScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("🌤️ Podstawowe dane pogodowe", style = MaterialTheme.typography.headlineMedium)
-    }
+    WeatherScreen()
 }
 
 @Composable
 fun AdditionalWeatherScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("💨 Dodatkowe dane: wiatr, wilgotność, widoczność", style = MaterialTheme.typography.headlineMedium)
-    }
+    WeatherAdditionalInfoScreen()
 }
 
 @Composable
 fun ForecastWeatherScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("📅 Prognoza na kolejne dni", style = MaterialTheme.typography.headlineMedium)
-    }
-}
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WeatherAppJetpackComposeTheme {
-        Greeting("Android")
-    }
+    WeatherForecastScreen()
 }
