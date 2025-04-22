@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -28,8 +29,9 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStoreManager = remember { DataStoreManager(context) }
-
-    var city by remember { mutableStateOf("") }
+    var isCelsius by remember { mutableStateOf(true) }
+    val temperatureUnitString = if (isCelsius) "°C" else "°F"
+    var city by remember { mutableStateOf("")}
     var expanded by remember { mutableStateOf(false) }
     var favoriteCities by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -38,18 +40,19 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     val isFavorite = city.isNotEmpty() && favoriteCities.contains(city)
     val favouriteIcon = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
 
-    LaunchedEffect(Unit) {
-        dataStoreManager.favoriteCitiesFlow.collect { cities ->
-            favoriteCities = cities
+    LaunchedEffect(true) {
+        launch {
+            dataStoreManager.favoriteCitiesFlow.collect { cities ->
+                favoriteCities = cities
+            }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        dataStoreManager.lastCityFlow.collect { lastCity ->
-            if (lastCity.isNotEmpty()) {
-                city = lastCity
-                viewModel.updateCity(lastCity)
-                viewModel.fetchWeather()
+        launch {
+            dataStoreManager.lastCityFlow.collect { lastCity ->
+                if (lastCity.isNotEmpty()) {
+                    city = lastCity
+                    viewModel.updateCity(lastCity)
+                    viewModel.fetchWeather()
+                }
             }
         }
     }
@@ -69,10 +72,12 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 TextField(
                     value = city,
                     onValueChange = { city = it },
-                    label = { Text("Miasto") },
+                    label = { Text("City") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     singleLine = true,
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier.menuAnchor(
+                        type = MenuAnchorType.PrimaryNotEditable,
+                        enabled = true)
                 )
 
                 if (favoriteCities.isNotEmpty()) {
@@ -94,7 +99,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                     }
                 }
             }
-
+            //Favourite button
             IconButton(onClick = {
                 if (city.isNotEmpty()) {
                     if (favoriteCities.contains(city)) {
@@ -114,7 +119,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
             }) {
                 Icon(imageVector = favouriteIcon, contentDescription = "Toggle favorite")
             }
-
+            //Refresh button
             IconButton(onClick = {
                 if (city.isNotEmpty()) {
                     viewModel.updateCity(city)
@@ -129,11 +134,38 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         weatherState?.let { weather ->
-            Text("🌍 Współrzędne: ${weather.coord.lat}, ${weather.coord.lon}")
-            Text("🕒 Czas: ${formatUnixTime(weather.dt)}")
-            Text("🌡️ Temp: ${weather.main.temp}°C")
-            Text("💨 Ciśnienie: ${weather.main.pressure} hPa")
-            Text("📖 Opis: ${weather.weather.firstOrNull()?.description ?: "Brak opisu"}")
+            Text("🌍 Coordinates: ${weather.coord.lat}, ${weather.coord.lon}",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Left)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("🕒 Fetched: ${formatUnixTime(weather.dt)}",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Left)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val temp = if (isCelsius) weather.main.temp else (weather.main.temp * 9/5) + 32
+            Text("🌡️ Temp: ${"%.1f".format(temp)}$temperatureUnitString",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Left
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("💨 Pressure: ${weather.main.pressure} hPa",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Left)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("📖 Description: ${weather.weather.firstOrNull()?.description ?: "No description"}",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Left)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
 
             weather.weather.firstOrNull()?.icon?.let { icon ->
                 Image(
@@ -143,7 +175,22 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 )
             }
         } ?: run {
-            Text("Ładowanie danych...")
+            Text("Loading data...")
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Switch(
+                checked = isCelsius,
+                onCheckedChange = { isCelsius = it },
+                thumbContent = {
+                    Text(if (isCelsius) "°C" else "°F", modifier = Modifier.padding(2.dp))
+                }
+            )
+
         }
     }
 }

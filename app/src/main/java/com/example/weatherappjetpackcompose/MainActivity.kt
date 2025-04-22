@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.core.view.ViewCompat
 import com.example.weatherappjetpackcompose.ui.screens.WeatherAdditionalInfoScreen
 import com.example.weatherappjetpackcompose.ui.screens.WeatherScreen

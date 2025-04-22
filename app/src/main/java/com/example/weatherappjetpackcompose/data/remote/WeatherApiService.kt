@@ -11,7 +11,7 @@ interface WeatherApiService {
         @Query("q") city: String,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric",
-        @Query("lang") lang: String = "pl"
+        @Query("lang") lang: String = "en"
     ): WeatherResponse
 
     @GET("forecast")
@@ -19,6 +19,6 @@ interface WeatherApiService {
         @Query("q") city: String,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric",
-        @Query("lang") lang: String = "pl"
+        @Query("lang") lang: String = "en"
     ): ForecastResponse
 }

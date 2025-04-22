@@ -18,7 +18,6 @@ class WeatherViewModel : ViewModel() {
     val forecast: StateFlow<List<ForecastItem>> = _forecast
 
     private val _city = MutableStateFlow("Warszawa")
-    val city: StateFlow<String> = _city
 
     private val apiKey = "d2e17bf45858c86f284cd280a2dd1ee3"
 
@@ -43,7 +42,7 @@ class WeatherViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val result = RetrofitClient.api.getForecast(_city.value, apiKey)
-                _forecast.value = result.list.filterIndexed { index, _ -> (index+2) % 8 == 0 } // co 24h
+                _forecast.value = result.list.filterIndexed { index, _ -> (index+2) % 8 == 0 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
