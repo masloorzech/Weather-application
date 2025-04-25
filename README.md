@@ -50,7 +50,11 @@ A simple **Weather App** that provides real-time weather information, including 
 
 ---
 
-## 📸 Screenshots
+## 📸 Screenshots (Phone version)
 
-
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/838eea05-2a77-4c28-92f9-3633cde89fd5" width="300">
+    <img src="https://github.com/user-attachments/assets/379efd74-94b1-4e12-ab3c-5f2dd6220112" width="300">
+    <img src="https://github.com/user-attachments/assets/b008958b-191d-45f8-b055-682983f04ddd" width="300">
+</p>
 
