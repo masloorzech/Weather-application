@@ -24,6 +24,8 @@ import androidx.core.view.ViewCompat
 import com.example.weatherappjetpackcompose.ui.screens.WeatherAdditionalInfoScreen
 import com.example.weatherappjetpackcompose.ui.screens.WeatherScreen
 import com.example.weatherappjetpackcompose.ui.theme.WeatherAppJetpackComposeTheme
+import com.example.weatherappjetpackcompose.utils.rememberDevicePosture
+import com.example.weatherappjetpackcompose.utils.DevicePosture
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +37,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    WeatherPagerScreen()
+                    val devicePosture = rememberDevicePosture(this)
+                    WeatherPagerScreen(devicePosture)
                 }
             }
         }
@@ -43,17 +46,34 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WeatherPagerScreen() {
-    val pagerState = rememberPagerState(pageCount = { 3 })
+fun WeatherPagerScreen(devicePosture: DevicePosture) {
+    when (devicePosture) {
+        DevicePosture.TABLET -> {
+            androidx.compose.foundation.layout.Row(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.weight(1f)) {
+                    BasicWeatherScreen()
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    AdditionalWeatherScreen()
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    ForecastWeatherScreen()
+                }
+            }
+        }
+        else -> {
+            val pagerState = rememberPagerState(pageCount = { 3 })
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxSize()
-    ) { page ->
-        when (page) {
-            0 -> BasicWeatherScreen()
-            1 -> AdditionalWeatherScreen()
-            2 -> ForecastWeatherScreen()
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                when (page) {
+                    0 -> BasicWeatherScreen()
+                    1 -> AdditionalWeatherScreen()
+                    2 -> ForecastWeatherScreen()
+                }
+            }
         }
     }
 }
