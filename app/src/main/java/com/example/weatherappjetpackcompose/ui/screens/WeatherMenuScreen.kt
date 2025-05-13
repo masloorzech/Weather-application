@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -35,12 +36,14 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.res.fontResource
+import androidx.compose.ui.text.googlefonts.GoogleFont
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
+
 @Composable
+@Preview
 fun WeatherMenuScreen() {
-
+    var inter = FontFamily(Font(R.font.inter))
+    var isChecked = true;
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,7 +93,7 @@ fun WeatherMenuScreen() {
                             .fillMaxWidth(),
                         fontSize = 24.sp,
                         color = Color(0xFFD2D1D3),
-                        fontFamily = FontFamily()
+                        fontFamily = inter
                     )
 
                 }
@@ -100,11 +103,187 @@ fun WeatherMenuScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color(0xFF181820))
-                    .height(2.dp)
-            ){
+                    .height(1.dp)
+            ){}
+
+            //First section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                Text("Units controls"
+                    , modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    fontSize = 24.sp,
+                    color = Color(0xFFD2D1D3),
+                    fontFamily = inter
+                )
+                Text("Select units to show in the main menu. You can switch between Celsius and Fahrenheit, as well as between km/h and m/s for wind speed."
+                    , modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 0.dp, horizontal = 12.dp),
+                    textAlign = TextAlign.Justify,
+                    fontSize = 12.sp,
+                    color = Color(0xFF7E7F8D),
+                    fontFamily = inter
+                )
+                    //Tempearture section
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(vertical = 0.dp, horizontal = 12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(0.5f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            Arrangement.Center,
+                            Alignment.CenterVertically
+                        ){
+                            Text(
+                                "°C",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                textAlign = TextAlign.Right,
+                                fontSize = 9.sp,
+                                color = Color(0xFF7E7F8D),
+                                fontFamily = inter,
+                            )
+                            Switch(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                checked = isChecked,
+                                onCheckedChange = { isChecked = it }
+
+                            )
+                            Text(
+                                "°F",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                textAlign = TextAlign.Left,
+                                fontSize = 9.sp,
+                                color = Color(0xFF7E7F8D),
+                                fontFamily = inter
+                            )
+
+                        }
+                        Text(
+                            "Temperature",
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp,
+                            color = Color(0xFF7E7F8D),
+                            fontFamily = inter
+                        )
+
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            Arrangement.Center,
+                            Alignment.CenterVertically
+                            ){
+                            Text(
+                                "km/h",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                textAlign = TextAlign.Right,
+                                fontSize = 9.sp,
+                                color = Color(0xFF7E7F8D),
+                                fontFamily = inter,
+                            )
+                        Switch(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            checked = isChecked,
+                            onCheckedChange = { isChecked = it }
+
+                        )
+                            Text(
+                                "m/s",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                textAlign = TextAlign.Left,
+                                fontSize = 9.sp,
+                                color = Color(0xFF7E7F8D),
+                                fontFamily = inter
+                            )
+
+                            }
+                        Text(
+                            "Wind",
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp,
+                            color = Color(0xFF7E7F8D),
+                            fontFamily = inter
+                        )
+
+                    }
+                }
 
             }
-
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFF181820))
+                    .height(1.dp)
+            ){}
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                Text(
+                    "Refresh rate", modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    fontSize = 24.sp,
+                    color = Color(0xFFD2D1D3),
+                    fontFamily = inter
+                )
+                Text(
+                    "Choose a refresh interval that fits your needs – more frequent updates mean fresher data, but may use more battery.",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 0.dp, horizontal = 12.dp),
+                    textAlign = TextAlign.Justify,
+                    fontSize = 12.sp,
+                    color = Color(0xFF7E7F8D),
+                    fontFamily = inter
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .border(1.dp, Color.Cyan)
+                ){
+                }
+            }
         }
 
     }
