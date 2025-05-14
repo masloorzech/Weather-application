@@ -50,7 +50,6 @@ fun WeatherMenuScreen() {
             .fillMaxSize()
             .background(color = Color(0xFF181820))
             .padding(vertical = 64.dp, horizontal = 16.dp),
-
     ){
         Row(
             modifier = Modifier

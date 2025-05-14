@@ -25,6 +25,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Preview
 fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
