@@ -3,9 +3,11 @@ package com.example.weatherappjetpackcompose
 import WeatherForecastScreen
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
 import com.example.weatherappjetpackcompose.ui.screens.WeatherAdditionalInfoScreen
@@ -28,19 +31,28 @@ import com.example.weatherappjetpackcompose.ui.screens.WeatherScreen
 import com.example.weatherappjetpackcompose.ui.theme.WeatherAppJetpackComposeTheme
 import com.example.weatherappjetpackcompose.utils.rememberDevicePosture
 import com.example.weatherappjetpackcompose.utils.DevicePosture
+import android.content.pm.ActivityInfo
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             WeatherAppJetpackComposeTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
                     val devicePosture = rememberDevicePosture(this)
+                    when (devicePosture){
+                        DevicePosture.TABLET -> {
+                            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        }
+                        else -> {
+                            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        }
+                }
                     WeatherPagerScreen(devicePosture)
                 }
             }
@@ -65,35 +77,22 @@ fun WeatherPagerScreen(devicePosture: DevicePosture) {
             }
         }
         else -> {
-            val pagerState = rememberPagerState(pageCount = { 3 })
-
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    BottomMenu()
-                },
-                floatingActionButton = {
-                    MenuButton()
-                },
-                floatingActionButtonPosition = androidx.compose.material3.FabPosition.Center,
-                containerColor = MaterialTheme.colorScheme.background
-            ) { innerPadding ->
+            val pagerState = rememberPagerState(initialPage = 1, pageCount = { 3 })
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier
-                        .padding(innerPadding)
+                        .background(color= Color(0xFF181820))
                         .fillMaxSize()
                 ) { page ->
                     when (page) {
-                        0 -> BasicWeatherScreen()
-                        1 -> AdditionalWeatherScreen()
+                        0 -> AdditionalWeatherScreen()
+                        1 -> BasicWeatherScreen()
                         2 -> ForecastWeatherScreen()
                     }
                 }
             }
         }
     }
-}
 
 @Composable
 fun BasicWeatherScreen() {
@@ -108,23 +107,4 @@ fun AdditionalWeatherScreen() {
 @Composable
 fun ForecastWeatherScreen() {
     WeatherForecastScreen()
-}
-
-@Composable
-fun MenuButton() {
-    val context = LocalContext.current
-    androidx.compose.material3.FloatingActionButton(onClick = {
-        val intent = Intent(context, MenuActivity::class.java)
-        context.startActivity(intent)
-    }) {
-        Text("Menu")
-    }
-}
-
-@Composable
-fun BottomMenu() {
-    androidx.compose.material3.BottomAppBar(
-        actions = {
-        }
-    )
 }

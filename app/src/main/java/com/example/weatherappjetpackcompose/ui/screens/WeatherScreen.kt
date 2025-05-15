@@ -1,7 +1,12 @@
 package com.example.weatherappjetpackcompose.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
@@ -10,15 +15,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.example.weatherappjetpackcompose.viewmodel.WeatherViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weatherappjetpackcompose.MenuActivity
 import com.example.weatherappjetpackcompose.data.managers.DataStoreManager
+import com.example.weatherappjetpackcompose.ui.components.DescriptionPanel
+import com.example.weatherappjetpackcompose.ui.components.SmallPanel
+import com.example.weatherappjetpackcompose.ui.components.TemperaturePanel
+import com.example.weatherappjetpackcompose.ui.components.TextField
+import com.example.weatherappjetpackcompose.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -61,10 +72,18 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 64.dp,horizontal = 16.dp),
+            .background(color= Color(0xFF181820))
+            .padding(vertical = 32.dp,horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+    ){
+        Box(modifier = Modifier.fillMaxWidth()
+            .fillMaxHeight()
+            .weight(0.5f)) {
+        }
+
+        Row(modifier = Modifier.fillMaxWidth()
+            .fillMaxHeight()
+            .weight(0.5f)) {
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
@@ -131,67 +150,200 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh data")
             }
         }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.1f)
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        weatherState?.let { weather ->
-            Text("🌍 Coordinates: ${weather.coord.lat}, ${weather.coord.lon}",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Left)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("🕒 Fetched: ${formatUnixTime(weather.dt)}",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Left)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val temp = if (isCelsius) weather.main.temp else (weather.main.temp * 9/5) + 32
-            Text("🌡️ Temp: ${"%.1f".format(temp)}$temperatureUnitString",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Left
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("💨 Pressure: ${weather.main.pressure} hPa",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Left)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("📖 Description: ${weather.weather.firstOrNull()?.description ?: "No description"}",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Left)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            weather.weather.firstOrNull()?.icon?.let { icon ->
-                Image(
-                    painter = rememberAsyncImagePainter("https://openweathermap.org/img/wn/${icon}@2x.png"),
-                    contentDescription = null,
-                    modifier = Modifier.size(100.dp)
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .weight(1f))
+        {
+            weatherState?.let { weather ->
+                val temp = if (isCelsius) weather.main.temp else (weather.main.temp * 9/5) + 32
+                TemperaturePanel(
+                    temperature = "${"%.1f".format(temp)}",
+                    unit = temperatureUnitString,
+                    latitude = weather.coord.lat.toString(),
+                    longitude = weather.coord.lon.toString()
+                )
+            } ?: run {
+                TemperaturePanel(
+                    temperature = "?",
+                    unit = temperatureUnitString,
+                    latitude = "?",
+                    longitude ="?"
                 )
             }
-        } ?: run {
-            Text("Loading data...")
+
         }
-        Box(
+        Spacer(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            Switch(
-                checked = isCelsius,
-                onCheckedChange = { isCelsius = it },
-                thumbContent = {
-                    Text(if (isCelsius) "°C" else "°F", modifier = Modifier.padding(2.dp))
+                .fillMaxWidth()
+                .weight(0.1f)
+        )
+        Box(modifier = Modifier.fillMaxWidth()
+            .fillMaxHeight()
+            .weight(1f))
+        {
+            weatherState?.let { weather ->
+                DescriptionPanel(
+                    description = weather.weather.firstOrNull()?.description ?: "No data",
+                    pressure = weather.main.pressure.toString(),
+                    imageRes = "https://openweathermap.org/img/wn/${weather.weather.firstOrNull()?.icon}@2x.png"
+                )
+            } ?: run {
+                DescriptionPanel(
+                    description = "?",
+                    pressure = "?",
+                    imageRes = null
+                )
+            }
+        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.1f)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .fillMaxHeight()
+                .weight(1f)
+        ){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(2f)
+            ) {
+                weatherState?.let { weather ->
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }?: run{
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "?",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
                 }
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Box( modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f)) {
+                weatherState?.let { weather ->
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }?: run{
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "?",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Box( modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f)) {
+                weatherState?.let { weather ->
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }?: run{
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "?",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Box( modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f)) {
+                weatherState?.let { weather ->
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }?: run{
+                    SmallPanel(
+                        time = "6:00AM",
+                        temperature = "?",
+                        unit = temperatureUnitString,
+                        imageRes = 0
+                    )
+                }
+            }
+        }
+        Row(modifier = Modifier.fillMaxWidth()
+            .fillMaxHeight()
+            .weight(1f),
+            horizontalArrangement = Arrangement.Center)
+        {
+            Box(
+                Modifier.fillMaxWidth()
+                    .padding(0.dp, 40.dp)
+                    .weight(2f)
+            ){
+                TextField(
+                    text = "Fill me daddy"
+                )
+            }
+            Spacer(
+                Modifier.fillMaxWidth()
+                    .weight(1f)
             )
 
+            Box(Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(0.dp, 40.dp)
+                .background(color = Color(0xFF4C4857), shape = RoundedCornerShape(8.dp))
+                .weight(1f)
+                .clickable{
+                    val intent = Intent(context, MenuActivity::class.java)
+                    context.startActivity(intent)
+                },
+                contentAlignment = Alignment.Center,
+                )
+            {
+                Image(painter = painterResource(R.drawable.slider),
+                    contentDescription = "Slider",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
     }
 }
