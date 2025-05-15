@@ -24,7 +24,7 @@ fun DescriptionPanel(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = Color(0xFF2F2C37))
+            .background(color = Color(0xFF2F2C37),shape = RoundedCornerShape(8.dp))
             .padding(8.dp)
     )
     {

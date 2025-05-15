@@ -19,8 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.weatherappjetpackcompose.viewmodel.WeatherViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherappjetpackcompose.MenuActivity
@@ -43,11 +46,14 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     val dataStoreManager = remember { DataStoreManager(context) }
     var isCelsius by remember { mutableStateOf(true) }
     val temperatureUnitString = if (isCelsius) "°C" else "°F"
-    var city by remember { mutableStateOf("")}
+    var city by remember { mutableStateOf("Warsaw")}
     var expanded by remember { mutableStateOf(false) }
     var favoriteCities by remember { mutableStateOf<List<String>>(emptyList()) }
 
     val weatherState by viewModel.weather.collectAsState()
+
+    var pixel_font = FontFamily(Font(R.font.pixel_sans))
+
 
     val isFavorite = city.isNotEmpty() && favoriteCities.contains(city)
     val favouriteIcon = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
@@ -78,76 +84,52 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     ){
         Box(modifier = Modifier.fillMaxWidth()
             .fillMaxHeight()
-            .weight(0.5f)) {
+            .weight(0.5f), contentAlignment = Alignment.Center){
+            Text("ClimaSynth",
+                fontSize = 42.sp,
+                color = Color(0xFFD2D1D3),
+                fontFamily = pixel_font
+            )
         }
 
-        Row(modifier = Modifier.fillMaxWidth()
+        Row(modifier = Modifier
+            .fillMaxWidth()
             .fillMaxHeight()
-            .weight(0.5f)) {
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.weight(1f)
+            .weight(0.4f))
+        {
+            Box(
+                modifier = Modifier
+                    .background(color = Color(0xFF2F2C37), shape = RoundedCornerShape(8.dp))
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .weight(4f),
+                contentAlignment = Alignment.Center
+            ){
+                Text("$city", color = Color(0xFFD2D1D3),
+                    fontSize = 20.sp)
+            }
+            Spacer(
+                modifier = Modifier
+                    .weight(0.1f)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(color = Color(0xFF4C4857), shape = RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
             ) {
-                TextField(
-                    value = city,
-                    onValueChange = { city = it },
-                    label = { Text("City") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    singleLine = true,
-                    modifier = Modifier.menuAnchor(
-                        type = MenuAnchorType.PrimaryNotEditable,
-                        enabled = true)
-                )
-
-                if (favoriteCities.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        favoriteCities.forEach { favCity ->
-                            DropdownMenuItem(
-                                text = { Text(favCity) },
-                                onClick = {
-                                    city = favCity
-                                    expanded = false
-                                    viewModel.updateCity(city)
-                                    viewModel.fetchWeather()
-                                }
-                            )
-                        }
+                //Refresh button
+                IconButton(onClick = {
+                    if (city.isNotEmpty()) {
+                        viewModel.updateCity(city)
+                        viewModel.fetchWeather()
+                        scope.launch { dataStoreManager.saveLastCity(city) }
                     }
+                }) {
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh data")
                 }
-            }
-            //Favourite button
-            IconButton(onClick = {
-                if (city.isNotEmpty()) {
-                    if (favoriteCities.contains(city)) {
-                        scope.launch {
-                            val updated = favoriteCities.filter { it != city }
-                            dataStoreManager.saveFavoriteCities(updated)
-                            favoriteCities = updated
-                        }
-                    } else {
-                        scope.launch {
-                            val updated = favoriteCities + city
-                            dataStoreManager.saveFavoriteCities(updated)
-                            favoriteCities = updated
-                        }
-                    }
-                }
-            }) {
-                Icon(imageVector = favouriteIcon, contentDescription = "Toggle favorite")
-            }
-            //Refresh button
-            IconButton(onClick = {
-                if (city.isNotEmpty()) {
-                    viewModel.updateCity(city)
-                    viewModel.fetchWeather()
-                    scope.launch { dataStoreManager.saveLastCity(city) }
-                }
-            }) {
-                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh data")
             }
         }
         Spacer(
@@ -306,14 +288,20 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 }
             }
         }
-        Row(modifier = Modifier.fillMaxWidth()
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .weight(0.1f)
+        )
+        Row(modifier = Modifier
+            .fillMaxWidth()
             .fillMaxHeight()
-            .weight(1f),
-            horizontalArrangement = Arrangement.Center)
+            .weight(0.4f))
         {
             Box(
                 Modifier.fillMaxWidth()
-                    .padding(0.dp, 40.dp)
+                    .fillMaxHeight()
                     .weight(2f)
             ){
                 TextField(
@@ -322,13 +310,12 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
             }
             Spacer(
                 Modifier.fillMaxWidth()
-                    .weight(1f)
+                    .weight(1.3f)
             )
 
             Box(Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(0.dp, 40.dp)
                 .background(color = Color(0xFF4C4857), shape = RoundedCornerShape(8.dp))
                 .weight(1f)
                 .clickable{
@@ -345,6 +332,12 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 )
             }
         }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .weight(0.4f)
+        )
     }
 }
 
