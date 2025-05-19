@@ -9,10 +9,17 @@ import com.example.weatherappjetpackcompose.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class WeatherViewModel : ViewModel() {
     private val _weather = MutableStateFlow<WeatherResponse?>(null)
     val weather: StateFlow<WeatherResponse?> = _weather
+
+    private val _todayForecast = MutableStateFlow<List<ForecastItem?>>(emptyList())
+    val todayForecast: StateFlow<List<ForecastItem?>> = _todayForecast
 
     private val _forecast = MutableStateFlow<List<ForecastItem>>(emptyList())
     val forecast: StateFlow<List<ForecastItem>> = _forecast
@@ -25,7 +32,9 @@ class WeatherViewModel : ViewModel() {
         _city.value = newCity
         fetchWeather()
         fetchForecast()
+        fetchTodayForecast()
     }
+
 
     fun fetchWeather() {
         viewModelScope.launch {
@@ -38,14 +47,34 @@ class WeatherViewModel : ViewModel() {
         }
     }
 
+    fun fetchTodayForecast() {
+        viewModelScope.launch {
+            try {
+                val result = RetrofitClient.api.getForecast(_city.value, apiKey)
+                _todayForecast.value = filterTodayForecast(result.list)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun fetchForecast() {
         viewModelScope.launch {
             try {
                 val result = RetrofitClient.api.getForecast(_city.value, apiKey)
-                _forecast.value = result.list.filterIndexed { index, _ -> (index+2) % 8 == 0 }
+                _forecast.value = result.list
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    private fun filterTodayForecast(forecast: List<ForecastItem>): List<ForecastItem> {
+        val today = LocalDate.now()
+
+        return forecast.filter {
+            val dateTime = LocalDateTime.ofEpochSecond(it.dt, 0, ZoneOffset.UTC)
+            dateTime.toLocalDate() == today
         }
     }
 }

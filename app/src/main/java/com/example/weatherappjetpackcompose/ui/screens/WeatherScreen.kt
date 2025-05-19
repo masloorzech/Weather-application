@@ -1,6 +1,7 @@
 package com.example.weatherappjetpackcompose.ui.screens
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,9 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +39,10 @@ import com.example.weatherappjetpackcompose.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,16 +54,29 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     var isCelsius by remember { mutableStateOf(true) }
     val temperatureUnitString = if (isCelsius) "°C" else "°F"
     var city by remember { mutableStateOf("Warsaw")}
-    var expanded by remember { mutableStateOf(false) }
     var favoriteCities by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    val todayForecast by viewModel.todayForecast.collectAsState()
 
     val weatherState by viewModel.weather.collectAsState()
 
     var pixel_font = FontFamily(Font(R.font.pixel_sans))
 
+    val now = remember { LocalDateTime.now(ZoneOffset.UTC) }
 
-    val isFavorite = city.isNotEmpty() && favoriteCities.contains(city)
-    val favouriteIcon = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
+    val hourlyForecast = remember(todayForecast) {
+        todayForecast
+            .filterNotNull()
+            .filter {
+                val dateTime = LocalDateTime.ofEpochSecond(it.dt, 0, ZoneOffset.UTC)
+                dateTime.toLocalDate() == now.toLocalDate()
+            }
+            .sortedBy {
+                val dateTime = LocalDateTime.ofEpochSecond(it.dt, 0, ZoneOffset.UTC)
+                kotlin.math.abs(dateTime.toEpochSecond(ZoneOffset.UTC) - now.toEpochSecond(ZoneOffset.UTC))
+            }
+            .take(4)
+    }
 
     LaunchedEffect(true) {
         launch {
@@ -120,15 +140,14 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                     .background(color = Color(0xFF4C4857), shape = RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                //Refresh button
                 IconButton(onClick = {
                     if (city.isNotEmpty()) {
                         viewModel.updateCity(city)
                         viewModel.fetchWeather()
-                        scope.launch { dataStoreManager.saveLastCity(city) }
                     }
                 }) {
-                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh data")
+                    Icon(imageVector = ImageVector.vectorResource(id = R.drawable.baseline_refresh_24), contentDescription = "Refresh data",
+                        tint = Color.White)
                 }
             }
         }
@@ -172,7 +191,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
         {
             weatherState?.let { weather ->
                 DescriptionPanel(
-                    description = weather.weather.firstOrNull()?.description ?: "No data",
+                    description = weather.weather.firstOrNull()?.description ?: "?",
                     pressure = weather.main.pressure.toString(),
                     imageRes = "https://openweathermap.org/img/wn/${weather.weather.firstOrNull()?.icon}@2x.png"
                 )
@@ -194,96 +213,38 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 .fillMaxHeight()
                 .weight(1f)
         ){
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(2f)
-            ) {
-                weatherState?.let { weather ->
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
-                }?: run{
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "?",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
+            hourlyForecast.forEachIndexed { index, forecastItem ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(2f)
+                ) {
+                    if (forecastItem != null) {
+                        val dateTime = LocalDateTime.ofEpochSecond(forecastItem.dt, 0, ZoneOffset.UTC)
+                        val formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                        Log.e("Time: ", formattedTime)
+
+                        SmallPanel(
+                            time = formattedTime,
+                            temperature = forecastItem.main.temp.toInt().toString(),
+                            unit = temperatureUnitString,
+                            imageRes = "https://openweathermap.org/img/wn/${forecastItem.weather.firstOrNull()?.icon}@2x.png"
+                        )
+                    } else {
+                        SmallPanel(
+                            time = "??",
+                            temperature = "?",
+                            unit = temperatureUnitString,
+                            imageRes = "0"
+                        )
+                    }
                 }
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-            Box( modifier = Modifier
-                .fillMaxWidth()
-                .weight(2f)) {
-                weatherState?.let { weather ->
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
-                }?: run{
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "?",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
-                }
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-            Box( modifier = Modifier
-                .fillMaxWidth()
-                .weight(2f)) {
-                weatherState?.let { weather ->
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
-                }?: run{
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "?",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
-                }
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-            Box( modifier = Modifier
-                .fillMaxWidth()
-                .weight(2f)) {
-                weatherState?.let { weather ->
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "",
-                        unit = temperatureUnitString,
-                        imageRes = 0
-                    )
-                }?: run{
-                    SmallPanel(
-                        time = "6:00AM",
-                        temperature = "?",
-                        unit = temperatureUnitString,
-                        imageRes = 0
+
+                if (index < hourlyForecast.lastIndex) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                 }
             }
@@ -304,9 +265,17 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                     .fillMaxHeight()
                     .weight(2f)
             ){
-                TextField(
-                    text = "Fill me daddy"
-                )
+                weatherState?.let { weather ->
+                    val dateTime = LocalDateTime.ofEpochSecond(weather.dt, 0, ZoneOffset.UTC)
+                    val formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                    TextField(
+                        text = "${formattedTime}"
+                    )
+                }?: run {
+                    TextField(
+                        text = "Waiting for data"
+                    )
+                }
             }
             Spacer(
                 Modifier.fillMaxWidth()

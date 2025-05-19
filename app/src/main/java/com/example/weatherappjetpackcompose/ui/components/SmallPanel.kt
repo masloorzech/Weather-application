@@ -25,7 +25,7 @@ fun SmallPanel(
     time: String,
     temperature: String,
     unit: String,
-    imageRes: Int
+    imageRes: String
 )
 {
     Column(

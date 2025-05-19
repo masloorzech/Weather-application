@@ -78,22 +78,6 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Switch(
-                    checked = isCelsius,
-                    onCheckedChange = { isCelsius = it },
-                    thumbContent = {
-                        Text(if (isCelsius) "°C" else "°F", modifier = Modifier.padding(2.dp))
-                    }
-                )
-            }
-        }
     }
 }
 
