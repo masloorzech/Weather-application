@@ -44,7 +44,6 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {

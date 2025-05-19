@@ -46,8 +46,6 @@ import com.example.weatherappjetpackcompose.ui.components.AdditionalInfoPanel
 fun WeatherAdditionalInfoScreen(viewModel: WeatherViewModel = viewModel() ) {
     val weatherState = viewModel.weather.collectAsState().value
 
-    val city by viewModel.city.collectAsState()
-
     var pixel_font = FontFamily(Font(R.font.pixel_sans))
 
     //Read unit form shared prefs

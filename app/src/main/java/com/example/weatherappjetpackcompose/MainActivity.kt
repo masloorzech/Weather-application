@@ -32,6 +32,7 @@ import com.example.weatherappjetpackcompose.ui.theme.WeatherAppJetpackComposeThe
 import com.example.weatherappjetpackcompose.utils.rememberDevicePosture
 import com.example.weatherappjetpackcompose.utils.DevicePosture
 import android.content.pm.ActivityInfo
+import com.example.weatherappjetpackcompose.ui.screens.CitySelectionScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -77,7 +78,7 @@ fun WeatherPagerScreen(devicePosture: DevicePosture) {
             }
         }
         else -> {
-            val pagerState = rememberPagerState(initialPage = 1, pageCount = { 3 })
+            val pagerState = rememberPagerState(initialPage = 1, pageCount = { 4 })
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier
@@ -88,6 +89,7 @@ fun WeatherPagerScreen(devicePosture: DevicePosture) {
                         0 -> AdditionalWeatherScreen()
                         1 -> BasicWeatherScreen()
                         2 -> ForecastWeatherScreen()
+                        3 -> CitySelectionScreen()
                     }
                 }
             }
