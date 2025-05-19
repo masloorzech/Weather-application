@@ -49,12 +49,11 @@ import java.time.format.DateTimeFormatter
 @Preview
 fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val dataStoreManager = remember { DataStoreManager(context) }
+
     var isCelsius by remember { mutableStateOf(true) }
     val temperatureUnitString = if (isCelsius) "°C" else "°F"
-    var city by remember { mutableStateOf("Warsaw")}
-    var favoriteCities by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    val city by viewModel.city.collectAsState()
 
     val todayForecast by viewModel.todayForecast.collectAsState()
 
@@ -76,23 +75,6 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 kotlin.math.abs(dateTime.toEpochSecond(ZoneOffset.UTC) - now.toEpochSecond(ZoneOffset.UTC))
             }
             .take(4)
-    }
-
-    LaunchedEffect(true) {
-        launch {
-            dataStoreManager.favoriteCitiesFlow.collect { cities ->
-                favoriteCities = cities
-            }
-        }
-        launch {
-            dataStoreManager.lastCityFlow.collect { lastCity ->
-                if (lastCity.isNotEmpty()) {
-                    city = lastCity
-                    viewModel.updateCity(lastCity)
-                    viewModel.fetchWeather()
-                }
-            }
-        }
     }
 
     Column(

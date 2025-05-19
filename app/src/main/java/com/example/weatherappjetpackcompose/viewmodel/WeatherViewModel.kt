@@ -25,6 +25,7 @@ class WeatherViewModel : ViewModel() {
     val forecast: StateFlow<List<ForecastItem>> = _forecast
 
     private val _city = MutableStateFlow("Warszawa")
+    val city: StateFlow<String> = _city
 
     private val apiKey = "d2e17bf45858c86f284cd280a2dd1ee3"
 
