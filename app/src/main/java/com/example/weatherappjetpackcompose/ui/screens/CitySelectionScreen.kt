@@ -30,12 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherappjetpackcompose.viewmodel.CitiViewModel
 import com.example.weatherappjetpackcompose.viewmodel.WeatherViewModel
 import androidx.compose.ui.platform.LocalFocusManager
+import com.example.weatherappjetpackcompose.data.managers.SharedPreferencesHelper
 
 
 @Preview
@@ -44,10 +46,15 @@ fun CitySelectionScreen(
   cityViewModel: CitiViewModel = viewModel(),
   weatherViewModel: WeatherViewModel = viewModel()
 ) {
+
+
+  val context = LocalContext.current
+  val prefsHelper = SharedPreferencesHelper(context)
+
   val pixelFont = FontFamily(Font(R.font.pixel_sans))
   val cities by cityViewModel.favouriteCities.collectAsState()
   val suggestions by cityViewModel.autocompleteResults.collectAsState()
-  var selectedCity by remember {mutableStateOf(weatherViewModel.city.toString())}
+  var selectedCity by remember {mutableStateOf(prefsHelper.getSelectedCity())}
   var query by remember { mutableStateOf("") }
   val focusManager = LocalFocusManager.current
   var isFocused by remember { mutableStateOf(false) }
@@ -175,7 +182,6 @@ fun CitySelectionScreen(
               text = city,
               color = Color.LightGray,
               fontSize = 18.sp,
-              fontFamily = pixelFont,
               modifier = Modifier.weight(1f)
                 .padding(8.dp)
 
@@ -206,7 +212,6 @@ fun CitySelectionScreen(
               text = city,
               color = Color.LightGray,
               fontSize = 18.sp,
-              fontFamily = pixelFont,
               modifier = Modifier.weight(1f)
                 .padding(8.dp)
             )

@@ -30,12 +30,12 @@ import androidx.compose.ui.unit.sp
 import com.example.weatherappjetpackcompose.viewmodel.WeatherViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherappjetpackcompose.MenuActivity
-import com.example.weatherappjetpackcompose.data.managers.DataStoreManager
 import com.example.weatherappjetpackcompose.ui.components.DescriptionPanel
 import com.example.weatherappjetpackcompose.ui.components.SmallPanel
 import com.example.weatherappjetpackcompose.ui.components.TemperaturePanel
 import com.example.weatherappjetpackcompose.ui.components.TextField
 import com.example.weatherappjetpackcompose.R
+import com.example.weatherappjetpackcompose.data.managers.SharedPreferencesHelper
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,8 +49,9 @@ import java.time.format.DateTimeFormatter
 fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
     val context = LocalContext.current
 
-    var isCelsius by remember { mutableStateOf(true) }
-    val temperatureUnitString = if (isCelsius) "°C" else "°F"
+    val prefsHelper = SharedPreferencesHelper(context)
+
+    var isCelsius by remember { mutableStateOf(prefsHelper.getTempUnit().toBoolean()) }
 
     val city by viewModel.city.collectAsState()
 
@@ -144,6 +145,8 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
             .weight(1f))
         {
             weatherState?.let { weather ->
+                val temperatureUnitString = if (isCelsius) "°C" else "°F"
+
                 val temp = if (isCelsius) weather.main.temp else (weather.main.temp * 9/5) + 32
                 TemperaturePanel(
                     temperature = "${"%.1f".format(temp)}",
@@ -152,6 +155,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                     longitude = weather.coord.lon.toString()
                 )
             } ?: run {
+                val temperatureUnitString = if (isCelsius) "°C" else "°F"
                 TemperaturePanel(
                     temperature = "?",
                     unit = temperatureUnitString,
@@ -204,6 +208,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                         val dateTime = LocalDateTime.ofEpochSecond(forecastItem.dt, 0, ZoneOffset.UTC)
                         val formattedTime = dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                         Log.e("Time: ", formattedTime)
+                        val temperatureUnitString = if (isCelsius) "°C" else "°F"
 
                         SmallPanel(
                             time = formattedTime,
@@ -212,6 +217,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                             imageRes = "https://openweathermap.org/img/wn/${forecastItem.weather.firstOrNull()?.icon}@2x.png"
                         )
                     } else {
+                        val temperatureUnitString = if (isCelsius) "°C" else "°F"
                         SmallPanel(
                             time = "??",
                             temperature = "?",

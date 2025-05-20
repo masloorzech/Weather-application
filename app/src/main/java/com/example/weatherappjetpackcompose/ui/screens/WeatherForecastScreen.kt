@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherappjetpackcompose.R
+import com.example.weatherappjetpackcompose.data.managers.SharedPreferencesHelper
 import com.example.weatherappjetpackcompose.ui.components.SmallPanel
 import com.example.weatherappjetpackcompose.ui.components.TextField
 import com.example.weatherappjetpackcompose.ui.screens.formatUnixTime
@@ -41,13 +43,11 @@ import com.example.weatherappjetpackcompose.viewmodel.WeatherViewModel
 fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
     val forecastList = viewModel.forecast.collectAsState().value
 
-    //Read temperature unif from sharedprefs
+    val context = LocalContext.current
+    val prefsHelper = SharedPreferencesHelper(context)
 
-    var isCelsius by remember { mutableStateOf(true) }
+    var isCelsius by remember { mutableStateOf(prefsHelper.getTempUnit().toBoolean()) }
     val temperatureUnitString = if (isCelsius) "°C" else "°F"
-
-    //Read city from shared prefs
-
 
     var pixel_font = FontFamily(Font(R.font.pixel_sans))
 
@@ -62,22 +62,11 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
         .fillMaxSize()
         .background(color = Color(0xFF181820))
         .padding(vertical = 32.dp,horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .weight(0.5f),
-            contentAlignment = Alignment.Center){
-            Text("ClimaSynth",
-                fontSize = 42.sp,
-                color = Color(0xFFD2D1D3),
-                fontFamily = pixel_font
-            )
-        }
+        horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
         Spacer(
             modifier = Modifier
-                .weight(0.1f)
+                .weight(0.5f)
         )
 
         LazyColumn(

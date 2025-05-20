@@ -23,27 +23,32 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.material3.DropdownMenuItem
 import com.example.weatherappjetpackcompose.MenuActivity
+import com.example.weatherappjetpackcompose.data.managers.SharedPreferencesHelper
 
 @SuppressLint("DefaultLocale")
 @Composable
 @Preview
 fun WeatherMenuScreen() {
 
+    val context = LocalContext.current
+    val prefsHelper = SharedPreferencesHelper(context)
+
     var inter = FontFamily(Font(R.font.inter))
     var pixel_font = FontFamily(Font(R.font.pixel_sans))
-    var temperature by remember { mutableStateOf(true) }
-    var wind by remember { mutableStateOf(true) }
+    var temperature by remember { mutableStateOf(prefsHelper.getTempUnit().toBoolean()) }
+    var wind by remember { mutableStateOf(prefsHelper.getWindUnit().toBoolean()) }
 
-    var selectedHour by remember { mutableStateOf(0) }
+    var selectedHour by remember { mutableStateOf(prefsHelper.getRefreshTimeHours()?.toInt() ?: 0) }
     var expandedHour by remember { mutableStateOf(false) }
 
-    var selectedMinute by remember { mutableStateOf(30) }
+    var selectedMinute by remember { mutableStateOf(prefsHelper.getRefreshTimeMinutes()?.toInt() ?: 30) }
     var expandedMinute by remember { mutableStateOf(false) }
 
     val hours = (0..6 step 1).toList()
     val minutes = (15..45 step 15).toList()
 
-    val context = LocalContext.current
+
+
 
     Column(
         modifier = Modifier
@@ -63,6 +68,10 @@ fun WeatherMenuScreen() {
                     .aspectRatio(1f)
                     .background(Color(0xFF2F2C37), shape = RoundedCornerShape(12.dp))
                     .clickable(onClick = {
+                        prefsHelper.saveTempUnit(temperature)
+                        prefsHelper.saveWindUnit(wind)
+                        prefsHelper.saveRefreshTimeMinutes("$selectedMinute")
+                        prefsHelper.saveRefreshTimeHours("$selectedHour")
                         (context as? MenuActivity)?.finish()
                     })
             ){
@@ -178,7 +187,7 @@ fun WeatherMenuScreen() {
                             Alignment.CenterVertically
                         ) {
                             Text(
-                                "°C",
+                                "°F",
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),
@@ -201,7 +210,7 @@ fun WeatherMenuScreen() {
                                 )
                             )
                             Text(
-                                "°F",
+                                "°C",
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),

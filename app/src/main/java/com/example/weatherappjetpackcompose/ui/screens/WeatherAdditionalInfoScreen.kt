@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherappjetpackcompose.R
+import com.example.weatherappjetpackcompose.data.managers.SharedPreferencesHelper
 import com.example.weatherappjetpackcompose.ui.components.TemperaturePanel
 import com.example.weatherappjetpackcompose.viewmodel.WeatherViewModel
 import kotlin.math.round
@@ -47,11 +49,14 @@ fun WeatherAdditionalInfoScreen(viewModel: WeatherViewModel = viewModel() ) {
     val weatherState = viewModel.weather.collectAsState().value
 
     var pixel_font = FontFamily(Font(R.font.pixel_sans))
+    val context = LocalContext.current
+    val prefsHelper = SharedPreferencesHelper(context)
 
     //Read unit form shared prefs
-    var isMetersPerSecond by remember { mutableStateOf(true) }
+    var isMetersPerSecond by remember { mutableStateOf(prefsHelper.getWindUnit().toBoolean()) }
 
     val windUnit = if (isMetersPerSecond) "m/s" else "km/h"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,7 +70,7 @@ fun WeatherAdditionalInfoScreen(viewModel: WeatherViewModel = viewModel() ) {
                 .weight(0.5f), contentAlignment = Alignment.Center
         ) {
             Text(
-                "ClimaSynth",
+                "",
                 fontSize = 42.sp,
                 color = Color(0xFFD2D1D3),
                 fontFamily = pixel_font
@@ -82,8 +87,9 @@ fun WeatherAdditionalInfoScreen(viewModel: WeatherViewModel = viewModel() ) {
             .weight(1f))
         {
             weatherState?.let { weather ->
+                val speed = if (isMetersPerSecond) weather.wind.speed else round(weather.wind.speed * 3.6)
                 AdditionalInfoPanel(
-                    value = weather.wind.speed.toString(),
+                    value = "%.2f".format(speed),
                     unit = windUnit.toString(),
                     imageRes = R.drawable.wind
                 )
