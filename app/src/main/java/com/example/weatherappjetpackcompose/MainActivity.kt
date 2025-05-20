@@ -67,10 +67,10 @@ fun WeatherPagerScreen(devicePosture: DevicePosture) {
         DevicePosture.TABLET -> {
             androidx.compose.foundation.layout.Row(modifier = Modifier.fillMaxSize()) {
                 Box(modifier = Modifier.weight(1f)) {
-                    BasicWeatherScreen()
+                    AdditionalWeatherScreen()
                 }
                 Box(modifier = Modifier.weight(1f)) {
-                    AdditionalWeatherScreen()
+                    BasicWeatherScreen()
                 }
                 Box(modifier = Modifier.weight(1f)) {
                     ForecastWeatherScreen()
@@ -109,4 +109,9 @@ fun AdditionalWeatherScreen() {
 @Composable
 fun ForecastWeatherScreen() {
     WeatherForecastScreen()
+}
+
+@Composable
+fun City() {
+    CitySelectionScreen()
 }

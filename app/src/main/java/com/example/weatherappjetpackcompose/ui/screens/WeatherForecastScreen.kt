@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,6 +60,7 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
 
     Column(modifier = Modifier
         .fillMaxSize()
+        .background(color = Color(0xFF181820))
         .padding(vertical = 32.dp,horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,7 +95,8 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                            .background(color = Color.Transparent)
+                        .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         firstRow.forEach { forecast ->
@@ -101,7 +104,13 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .height(150.dp)
-                                    .weight(1f),
+                                    .weight(1f)
+                                    .background(color = Color.Transparent),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Transparent
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                shape = RoundedCornerShape(16.dp)
                             ) {
                                 val temp =
                                     if (isCelsius) forecast.main.temp else (forecast.main.temp * 9 / 5) + 32
@@ -118,7 +127,8 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                            .background(color = Color.Transparent)
+                        .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         secondRow.forEach { forecast ->
@@ -126,8 +136,14 @@ fun WeatherForecastScreen(viewModel: WeatherViewModel = viewModel()) {
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .height(150.dp)
-                                    .weight(1f),
-                            ) {
+                                    .weight(1f)
+                                    .background(color = Color.Transparent),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Transparent
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                shape = RoundedCornerShape(16.dp)
+                                ) {
                                 val temp =
                                     if (isCelsius) forecast.main.temp else (forecast.main.temp * 9 / 5) + 32
                                 SmallPanel(

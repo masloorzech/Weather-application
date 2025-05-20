@@ -34,6 +34,10 @@ class CitiViewModel(application: Application) : AndroidViewModel(application) {
     }
   }
 
+  fun clearSuggestions() {
+    _autocompleteResults.value = emptyList()
+  }
+
   init {
     loadFavouriteCities()
   }

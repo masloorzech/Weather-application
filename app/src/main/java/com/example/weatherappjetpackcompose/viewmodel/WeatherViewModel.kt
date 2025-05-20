@@ -14,7 +14,9 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class WeatherViewModel : ViewModel() {
+class WeatherViewModel : ViewModel(
+
+) {
     private val _weather = MutableStateFlow<WeatherResponse?>(null)
     val weather: StateFlow<WeatherResponse?> = _weather
 
