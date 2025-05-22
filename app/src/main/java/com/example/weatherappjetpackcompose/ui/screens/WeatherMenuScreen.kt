@@ -313,7 +313,7 @@ fun WeatherMenuScreen() {
                     fontFamily = inter
                 )
                 Text(
-                    "Choose a refresh interval that fits your needs – more frequent updates mean fresher data, but may use more battery.",
+                    "Choose a refresh interval that fits your needs – more frequent updates mean fresher data, but may use more battery. To apply change restart app",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 0.dp, horizontal = 12.dp),

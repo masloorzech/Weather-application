@@ -1,43 +1,58 @@
 package com.example.weatherappjetpackcompose
 
 import WeatherForecastScreen
+import android.R
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.DisplayMetrics
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.ViewCompat
 import com.example.weatherappjetpackcompose.ui.screens.WeatherAdditionalInfoScreen
 import com.example.weatherappjetpackcompose.ui.screens.WeatherScreen
 import com.example.weatherappjetpackcompose.ui.theme.WeatherAppJetpackComposeTheme
 import com.example.weatherappjetpackcompose.utils.rememberDevicePosture
 import com.example.weatherappjetpackcompose.utils.DevicePosture
 import android.content.pm.ActivityInfo
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.weatherappjetpackcompose.data.managers.SharedPreferencesHelper
+import com.example.weatherappjetpackcompose.data.managers.WeatherWorker
 import com.example.weatherappjetpackcompose.ui.screens.CitySelectionScreen
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        scheduleWeatherWorker(applicationContext)
 
         enableEdgeToEdge()
         setContent {
@@ -61,19 +76,70 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun scheduleWeatherWorker(context: Context) {
+    val prefsHelper = SharedPreferencesHelper(context)
+
+    // Domyślne odświeżanie: 15 minut
+    var refreshRateMinutes = 15.0
+
+    prefsHelper.getRefreshTimeMinutes()?.toDoubleOrNull()?.let {
+        refreshRateMinutes += it
+    }
+
+    prefsHelper.getRefreshTimeHours()?.toDoubleOrNull()?.let {
+        refreshRateMinutes += it * 60
+    }
+
+    val workRequest = PeriodicWorkRequestBuilder<WeatherWorker>(
+        refreshRateMinutes.toLong(), TimeUnit.MINUTES
+    ).build()
+
+    WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(
+        "weather_update_worker",
+        ExistingPeriodicWorkPolicy.UPDATE,
+        workRequest
+    )
+}
+
 @Composable
 fun WeatherPagerScreen(devicePosture: DevicePosture) {
+    var selectedCities by remember { mutableStateOf(false) }
+
     when (devicePosture) {
         DevicePosture.TABLET -> {
-            androidx.compose.foundation.layout.Row(modifier = Modifier.fillMaxSize()) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.weight(0.1f)
+                    .background(color = Color(0xFF181820))) {
+                    Box(Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .background(color = Color(0xFF4C4857), shape = RoundedCornerShape(8.dp))
+                        .weight(1f)
+                        .clickable{
+                            selectedCities = !selectedCities
+                        },
+                        contentAlignment = Alignment.Center,
+                    )
+                    {
+                        Image(painter = painterResource(com.example.weatherappjetpackcompose.R.drawable.baseline_location_pin_24),
+                            contentDescription = "Select city",
+                            modifier = Modifier.fillMaxWidth(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
                 Box(modifier = Modifier.weight(1f)) {
-                    AdditionalWeatherScreen()
+                    if (selectedCities){
+                        CitySelectionScreen()
+                    }else {
+                        AdditionalWeatherScreen()
+                    }
                 }
                 Box(modifier = Modifier.weight(1f)) {
                     BasicWeatherScreen()
                 }
                 Box(modifier = Modifier.weight(1f)) {
-                    ForecastWeatherScreen()
+                        ForecastWeatherScreen()
                 }
             }
         }

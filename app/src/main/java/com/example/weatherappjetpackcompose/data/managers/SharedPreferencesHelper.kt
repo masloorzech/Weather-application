@@ -1,6 +1,5 @@
 package com.example.weatherappjetpackcompose.data.managers
 
-import android.R
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
