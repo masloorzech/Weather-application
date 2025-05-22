@@ -2,7 +2,8 @@
 
 
 
-![Screenshot_20250425_122441](https://github.com/user-attachments/assets/a168d733-67f0-4e5a-9d7f-7e46b16c61ad)
+![Screenshot_20250522_120022](https://github.com/user-attachments/assets/769971fd-69a5-4669-9fd1-8979fb7c59e9)
+
 
 
 ## 📖 Overview
@@ -53,8 +54,13 @@ A simple **Weather App** that provides real-time weather information, including 
 ## 📸 Screenshots (Phone version)
 
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/838eea05-2a77-4c28-92f9-3633cde89fd5" width="300">
-    <img src="https://github.com/user-attachments/assets/379efd74-94b1-4e12-ab3c-5f2dd6220112" width="300">
-    <img src="https://github.com/user-attachments/assets/b008958b-191d-45f8-b055-682983f04ddd" width="300">
+    <img src="https://github.com/user-attachments/assets/1e42f314-1c27-4847-aee1-446d71a36099" width="300">
+    <img src="https://github.com/user-attachments/assets/9514533c-c27f-4216-953e-58f573b32e22" width="300">
+    <img src="https://github.com/user-attachments/assets/8d5c7eb8-9016-4a3a-ae86-f2cf935003fc" width="300">
 </p>
 
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/0ef27dd2-8685-4719-b216-21cdb460e7ab" width="300">
+    <img src="https://github.com/user-attachments/assets/91160146-338b-4496-996c-59c2f5ac59f4" width="300">
+    <img src="https://github.com/user-attachments/assets/49cadbff-6793-4368-9607-acfb6ac9259b" width="300">
+</p>
