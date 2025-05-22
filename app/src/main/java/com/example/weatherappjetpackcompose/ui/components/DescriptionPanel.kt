@@ -10,20 +10,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun DescriptionPanel(
     description: String,
-    pressure: Long,
-    imageRes: Int,
+    pressure: String,
+    imageRes: String?,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(color = Color(0xFF2F2C37))
+            .background(color = Color(0xFF2F2C37),shape = RoundedCornerShape(8.dp))
             .padding(8.dp)
     )
     {
@@ -43,13 +44,13 @@ fun DescriptionPanel(
 
             ){
                 Text("$description",
-                    fontSize = 10.sp,
+                    fontSize = 20.sp,
                     color = Color(0xFFD2D1D3))
             }
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.15f)
+                    .weight(0.2f)
             )
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -58,32 +59,29 @@ fun DescriptionPanel(
             {
                 Box(
                     Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .fillMaxSize()
                         .weight(1f)
                         .background(color = Color(0xFF4C4857),shape = RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
                 ){
                     Text("$pressure",
-                        fontSize = 10.sp,
+                        fontSize = 32.sp,
                         color = Color(0xFFD2D1D3))
                 }
                 Spacer(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .weight(0.07f)
                 )
                 Box(
                     Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .fillMaxSize()
                         .weight(1f)
                         .background(color = Color(0xFF4C4857),shape = RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
-
                 ){
                     Text("hPa",
-                        fontSize = 10.sp,
+                        fontSize = 32.sp,
                         color = Color(0xFFD2D1D3))
                 }
             }
@@ -102,11 +100,19 @@ fun DescriptionPanel(
                 .weight(2f),
             contentAlignment = Alignment.Center
         ){
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
+            imageRes?.firstOrNull()?.let { imageRes
+                Image(
+                    painter = rememberAsyncImagePainter(imageRes),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
                 )
+            }?: run{
+                Text("No data",
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFFD2D1D3),
+                    modifier = Modifier.fillMaxWidth())
+            }
+
         }
 
     }
