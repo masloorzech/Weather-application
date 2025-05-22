@@ -21,4 +21,11 @@ interface WeatherApiService {
         @Query("units") units: String = "metric",
         @Query("lang") lang: String = "en"
     ): ForecastResponse
+
+  @GET("https://api.openweathermap.org/geo/1.0/direct")
+  suspend fun searchCities(
+    @Query("q") cityName: String,
+    @Query("limit") limit: Int = 5,
+    @Query("appid") apiKey: String
+  ): List<CityResponse>
 }
