@@ -54,13 +54,13 @@ A simple **Weather App** that provides real-time weather information, including 
 ## 📸 Screenshots (Phone version)
 
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/1e42f314-1c27-4847-aee1-446d71a36099" width="300">
-    <img src="https://github.com/user-attachments/assets/9514533c-c27f-4216-953e-58f573b32e22" width="300">
-    <img src="https://github.com/user-attachments/assets/8d5c7eb8-9016-4a3a-ae86-f2cf935003fc" width="300">
+    <img src="https://github.com/user-attachments/assets/1e42f314-1c27-4847-aee1-446d71a36099" width="250">
+    <img src="https://github.com/user-attachments/assets/9514533c-c27f-4216-953e-58f573b32e22" width="250">
+    <img src="https://github.com/user-attachments/assets/8d5c7eb8-9016-4a3a-ae86-f2cf935003fc" width="250">
 </p>
 
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/0ef27dd2-8685-4719-b216-21cdb460e7ab" width="300">
-    <img src="https://github.com/user-attachments/assets/91160146-338b-4496-996c-59c2f5ac59f4" width="300">
-    <img src="https://github.com/user-attachments/assets/49cadbff-6793-4368-9607-acfb6ac9259b" width="300">
+    <img src="https://github.com/user-attachments/assets/0ef27dd2-8685-4719-b216-21cdb460e7ab" width="250">
+    <img src="https://github.com/user-attachments/assets/91160146-338b-4496-996c-59c2f5ac59f4" width="250">
+    <img src="https://github.com/user-attachments/assets/49cadbff-6793-4368-9607-acfb6ac9259b" width="250">
 </p>
