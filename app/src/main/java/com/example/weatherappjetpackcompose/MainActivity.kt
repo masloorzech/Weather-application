@@ -74,6 +74,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        WorkManager.getInstance(applicationContext)
+            .cancelUniqueWork("weather_update_worker")
+    }
+
 }
 
 fun scheduleWeatherWorker(context: Context) {
